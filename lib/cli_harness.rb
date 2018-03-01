@@ -1,15 +1,16 @@
 require 'open3'
+require 'shellwords'
 
 class CLIHarness
   attr_reader :command, :stdin, :argv, :env, :spawn_options
 
-  def self.for_command(*args)
+  def self.for(*args)
     new(*args)
   end
 
-  def self.for_commandline(cmdline, **args)
+  def self.for_commandline(cmdline, **attrs)
     cmd, *argv = Shellwords.split(cmdline)
-    new(cmd, args.merge(argv: argv))
+    new(cmd, attrs.merge(argv: argv))
   end
 
   def initialize(command, stdin: '', argv: [], env: {}, spawn_options: {}, spawn_in_shell: false)
@@ -53,7 +54,16 @@ class CLIHarness
     )
   end
 
+  def inspect
+    "#<#{self.class}: #{commandline}>"
+  end
+
+  def commandline
+    Shellwords.join([command] + argv)
+  end
+
   private
+
     def normalize_argv(argv)
       case argv
       when Array then argv #leave it alone
@@ -65,7 +75,7 @@ class CLIHarness
     def open3_args
       if spawn_in_shell?
         # semicolon forces a shell to spawn
-        Shellwords.join([@command] + argv) + ' ; '
+        commandline + ' ;'
       else
         # this array form forces there NOT to be a shell according to the docs,
         # and yet a shell is still spawned :/
@@ -100,4 +110,5 @@ class CLIHarness
       !has_succeeded?
     end
   end
+
 end
