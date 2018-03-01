@@ -1,3 +1,8 @@
+PATH
+  remote: .
+  specs:
+    cli_harness (0.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -25,8 +30,9 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
-  rspec
-  rspec-its
+  cli_harness!
+  rspec (~> 3.7)
+  rspec-its (~> 1.2)
 
 BUNDLED WITH
    1.15.3
